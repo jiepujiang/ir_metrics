@@ -11,6 +11,7 @@ http://people.cs.umass.edu/~jpjiang/papers/chiir16_metrics.pdf
 
 Jiepu Jiang and James Allan. Adaptive effort for search evaluation metrics.
 In Proceedings of the 38th European Conference on Information Retrieval (ECIR '16), 2016
+
 http://people.cs.umass.edu/~jpjiang/papers/ecir16_metrics.pdf
 
 **DEPENDENCY**
