@@ -61,9 +61,9 @@ def star(pval):
         return ''
 
 
-session_ratings = load_ratings('rawdata/session')
-session_results = load_results('rawdata/results')
-session_qrels = load_qrels('rawdata/qrels')
+session_ratings = load_ratings('data/session')
+session_results = load_results('data/results')
+session_qrels = load_qrels('data/qrels')
 
 evec_static = [1.0, 1.0, 1.0]
 evec_param = [1.0 / 4, 1.0, 1.0]
@@ -124,6 +124,17 @@ metrics.append(
 
 metrics.append(
         [
+            'GAP',
+            [
+                SQMetric(GradAvgPrec(evec_static, gs), np.mean),
+                SQMetric(GradAvgPrec(evec_param, gs), np.mean),
+                SQMetric(GradAvgPrec(evec_time, gs), np.mean)
+            ]
+        ]
+)
+
+metrics.append(
+        [
             'RBP (p=0.8)',
             [
                 SQMetric(RBP(evec_static, 0.8), np.mean),
@@ -140,17 +151,6 @@ metrics.append(
                 SQMetric(RBP(evec_static, 0.6), np.mean),
                 SQMetric(RBP(evec_param, 0.6), np.mean),
                 SQMetric(RBP(evec_time, 0.6), np.mean)
-            ]
-        ]
-)
-
-metrics.append(
-        [
-            'GAP',
-            [
-                SQMetric(GradAvgPrec(evec_static, gs), np.mean),
-                SQMetric(GradAvgPrec(evec_param, gs), np.mean),
-                SQMetric(GradAvgPrec(evec_time, gs), np.mean)
             ]
         ]
 )
@@ -301,12 +301,13 @@ for [name, mets] in metrics:
         )
 
         print(
-            '%-20s  %16.3f %-3s  %16.3f %-3s  %16.3f %-3s  %16.3f %-3s  %16.3f %-3s  %16.3f %-3s'
+            '%-20s  %16.3f %-3s  %16.3f %-3s  %16.3f %-3s  %16.3f %-3s  %16.3f %-3s  %16.3f %-3s      %-3s'
             %
             (
                 name, r1, star(pr1), r2, star(pr2), r3, star(pr3),
                 np.mean(nrmse1), '',
                 np.mean(nrmse2), star(stats.ttest_rel(nrmse1, nrmse2)[1] / 2),
-                np.mean(nrmse3), star(stats.ttest_rel(nrmse1, nrmse3)[1] / 2)
+                np.mean(nrmse3), star(stats.ttest_rel(nrmse1, nrmse3)[1] / 2),
+                star(stats.ttest_rel(nrmse2, nrmse3)[1] / 2)
             )
         )

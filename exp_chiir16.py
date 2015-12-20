@@ -36,11 +36,11 @@ def last(array):
     return array[len(array) - 1]
 
 
-latex = False
+latex = True
 
-session_ratings = load_ratings('rawdata/session')
-session_results = load_results('rawdata/results')
-session_qrels = load_qrels('rawdata/qrels')
+session_ratings = load_ratings('data/session')
+session_results = load_results('data/results')
+session_qrels = load_qrels('data/qrels')
 
 k = 9
 
@@ -48,15 +48,11 @@ metrics = [
     ['sDCG', SDCG(2, 4, True)],
     ['nsDCG', NSDCG(2, 4, True)],
     ['sDCG/q', SDCGQ(2, 4, True)],
-    ['esNDCG (0.5, 0.5)', ESNDCG(0.5, 0.5, False)],
-    ['esNDCG (0.5, 0.8)', ESNDCG(0.5, 0.8, False)],
-    ['esNDCG (0.8, 0.5)', ESNDCG(0.8, 0.5, False)],
-    ['esNDCG (0.8, 0.8)', ESNDCG(0.8, 0.8, False)],
-    ['esNDCG (1.0, 0.5)', ESNDCG(1.0, 0.5, False)],
-    ['esNDCG (1.0, 0.8)', ESNDCG(1.0, 0.8, False)],
-    ['sDCG (no q discount)', SDCG(2, 4, False)],
-    ['nsDCG (no q discount)', NSDCG(2, 4, False)],
-    ['sDCG/q (no q discount)', SDCGQ(2, 4, False)],
+    ['esNDCG (0.9, 0.7)', ESNDCG(0.9, 0.7, True)],
+    ['esNCG (0.8, 0.7)', ESNDCG(0.8, 0.7, False)],
+    ['sDCG (no query discount)', SDCG(2, 4, False)],
+    ['nsDCG (no query discount)', NSDCG(2, 4, False)],
+    ['sDCG/q (no query discount)', SDCGQ(2, 4, False)],
     ['sum nDCG', SQMetric(NDCG([1.0, 1.0, 1.0]), np.sum)],
     ['mean nDCG', SQMetric(NDCG([1.0, 1.0, 1.0]), np.mean)],
     ['max nDCG', SQMetric(NDCG([1.0, 1.0, 1.0]), np.max)],
@@ -94,7 +90,7 @@ rho_dq, prho_dq = stats.spearmanr(vals_numq, vals_difficulty)
 
 if latex:
     print(
-        ' & %-20s & %16s & %-3s & %16s & %-3s & %16.3f & %-3s & %16.3f & %-3s \\\\'
+        ' & %-20s & %16s & %-3s & %16s & %-3s & $%.3f$ & %-3s & $%.3f$ & %-3s \\\\'
         %
         (
             'Performance',
@@ -119,7 +115,7 @@ else:
 
 if latex:
     print(
-        ' & %-20s & %16.3f & %-3s & %16.3f & %-3s & %16s & %-3s & %16s & %-3s \\\\'
+        ' & %-20s & $%.3f$ & %-3s & $%.3f$ & %-3s & %16s & %-3s & %16s & %-3s \\\\'
         %
         (
             'Difficulty',
@@ -144,7 +140,7 @@ else:
 
 if latex:
     print(
-        ' & %-20s & %16.3f & %-3s & %16.3f & %-3s & %16.3f & %-3s & %16.3f & %-3s \\\\'
+        ' & %-20s & $%.3f$ & %-3s & $%.3f$ & %-3s & $%.3f$ & %-3s & $%.3f$ & %-3s \\\\'
         %
         (
             'Performance',
@@ -172,7 +168,7 @@ for [name, metric] in metrics:
     r2, pr2, rho2, prho2 = correlation(session_ratings, session_results, session_qrels, 'difficulty', metric, k)
     if latex:
         print(
-            ' & %-20s & %16.3f & %-3s & %16.3f & %-3s & %16.3f & %-3s & %16.3f & %-3s \\\\'
+            ' & %-20s & $%.3f$ & %-3s & $%.3f$ & %-3s & $%.3f$ & %-3s & $%.3f$ & %-3s \\\\'
             %
             (
                 name,
