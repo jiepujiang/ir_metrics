@@ -75,6 +75,7 @@ numfolds, numsamples = 10, 10
 k = 9
 
 umetric = 'performance'
+best = SQMetric(GRBP(evec_param, 0.6, gs), np.mean)
 
 metrics = []
 
@@ -221,6 +222,15 @@ metrics.append(
 
 metrics.append(
         [
+            'U-measure',
+            [
+                SQMetric(UMeasure(2, [9.8, 23.0, 37.6], 65), np.mean)
+            ]
+        ]
+)
+
+metrics.append(
+        [
             'sDCG',
             [
                 SDCG(2, 4, True)
@@ -268,14 +278,18 @@ for [name, mets] in metrics:
                 session_ratings, session_results, session_qrels,
                 umetric, mets[0], k, 4.0, numfolds, numsamples
         )
+        nrmse_best = regress(
+                session_ratings, session_results, session_qrels,
+                umetric, best, k, 4.0, numfolds, numsamples
+        )
 
         print(
             '%-20s  %16.3f %-3s  %16s %-3s  %16s %-3s  %16.3f %-3s  %16s %-3s  %16s %-3s'
             %
             (
                 name, r, star(pr), '', '', '', '',
-                np.mean(nrmse), '',
-                '', '',
+                np.mean(nrmse), star(stats.ttest_rel(nrmse, nrmse_best)[1]),
+                stats.ttest_rel(nrmse, nrmse_best)[1], '',
                 '', ''
             )
         )
@@ -306,8 +320,8 @@ for [name, mets] in metrics:
             (
                 name, r1, star(pr1), r2, star(pr2), r3, star(pr3),
                 np.mean(nrmse1), '',
-                np.mean(nrmse2), star(stats.ttest_rel(nrmse1, nrmse2)[1] / 2),
-                np.mean(nrmse3), star(stats.ttest_rel(nrmse1, nrmse3)[1] / 2),
-                star(stats.ttest_rel(nrmse2, nrmse3)[1] / 2)
+                np.mean(nrmse2), star(stats.ttest_rel(nrmse1, nrmse2)[1]),
+                np.mean(nrmse3), star(stats.ttest_rel(nrmse1, nrmse3)[1]),
+                star(stats.ttest_rel(nrmse2, nrmse3)[1])
             )
         )

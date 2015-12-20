@@ -287,43 +287,16 @@ class UMeasure:
     # time      the expected time spent on results with each relevance grade
     # gain      the gain value for results with each relevance grade
     # T
-    def __init__(self, time, gain, T):
+    def __init__(self, rmax, time, T):
+        self.rmax = rmax
         self.time = time
-        self.gain = gain
         self.T = T
 
     def evaluate(self, qrels, results, k):
         sum_gain, arrive_time, rank = 0.0, 0.0, 1
         for doc in results:
             rel = qrels.get(doc, 0)
-            gain = self.gain[rel]
-            discount = 1 - arrive_time / self.T
-            if discount < 0:
-                discount = 0
-            sum_gain += gain * discount
-            arrive_time += self.time[rel]
-            rank += 1
-            if rank > k:
-                break
-        return sum_gain
-
-
-# U-measure.
-class UMeasure2:
-    # time      the expected time spent on results with each relevance grade
-    # gain      the gain value for results with each relevance grade
-    # T
-    def __init__(self, time, pclick, psave, T):
-        self.time = time
-        self.pclick = pclick
-        self.psave = psave
-        self.T = T
-
-    def evaluate(self, qrels, results, k):
-        sum_gain, arrive_time, rank = 0.0, 0.0, 1
-        for doc in results:
-            rel = qrels.get(doc, 0)
-            gain = self.pclick[rel] * self.psave[rel]
+            gain = (2 ** rel - 1.0) / 2 ** self.rmax
             discount = 1 - arrive_time / self.T
             if discount < 0:
                 discount = 0
