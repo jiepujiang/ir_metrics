@@ -1,7 +1,11 @@
+#
+# tune U-measure parameters by a brute force scan
+#
+
 import numpy as np
 import scipy.stats as stats
 
-from utils import *
+from dataset import *
 from query_metrics import *
 from session_metrics import *
 

@@ -1,11 +1,31 @@
+#
+# Metrics for evaluating a search session (multiple queries)'s quality.
+#
+# [Reference]
+# Jiepu Jiang and James Allan. Correlation between system and user metrics in a session.
+# In Proceedings of the first ACM SIGIR Conference on Human Information Interaction and Retrieval (CHIIR '16),
+# Chapel Hill, North Carolina, USA, 2016.
+#
+# http://people.cs.umass.edu/~jpjiang/papers/chiir16_metrics.pdf
+#
+
 import math
 import random
 
 
+#
 # sDCG.
+#
+# [Reference]
+# Kalervo Jarvelin, Susan L. Price, Lois M. L. Delcambre, and Marianne Lykke Nielsen. 2008.
+# Discounted cumulated gain based evaluation of multiple-query IR sessions.
+# In Proceedings of the IR research, 30th European conference on Advances in information retrieval (ECIR'08),
+# Craig Macdonald, Iadh Ounis, Vassilis Plachouras, Ian Ruthven, and Ryen W. White (Eds.).
+# Springer-Verlag, Berlin, Heidelberg, 4-15.
 class SDCG:
-    # b             rank discount parameter
-    # bq            query discount parameter
+    #
+    # b             the rank discount parameter
+    # bq            the query discount parameter
     # discountq     whether or not to apply query discount
     def __init__(self, b, bq, discountq):
         self.b = b
@@ -32,10 +52,17 @@ class SDCG:
         return sdcg
 
 
-# nsDCG.
+#
+# Normalized sDCG.
+#
+# [Reference]
+# Evangelos Kanoulas, Ben Carterette, Paul D. Clough, and Mark Sanderson. 2011. Evaluating multi-query sessions.
+# In Proceedings of the 34th international ACM SIGIR conference on Research and development in Information Retrieval
+# (SIGIR '11). ACM, New York, NY, USA, 1053-1062. DOI=http://dx.doi.org/10.1145/2009916.2010056
 class NSDCG:
-    # b             rank discount parameter
-    # bq            query discount parameter
+    #
+    # b             the rank discount parameter
+    # bq            the query discount parameter
     # discountq     whether or not to apply query discount
     def __init__(self, b, bq, discountq):
         self.b = b
@@ -49,10 +76,12 @@ class NSDCG:
         return sdcg.evaluate(qrels, sresults, k) / sdcg.evaluate(qrels, ideal_session, k)
 
 
-# sDCG/q.
+#
+# sDCG/q: a metric that normalizes sDCG by simply the number of queries in a session.
 class SDCGQ:
-    # b             rank discount parameter
-    # bq            query discount parameter
+    #
+    # b             the rank discount parameter
+    # bq            the query discount parameter
     # discountq     whether or not to apply query discount
     def __init__(self, b, bq, discountq):
         self.b = b
@@ -64,17 +93,27 @@ class SDCGQ:
         return sdcg.evaluate(qrels, sresults, k) / len(sresults)
 
 
-# nsDCG.
+#
+# Estimated session nDCG.
+#
+# [Reference]
+# Evangelos Kanoulas, Ben Carterette, Paul D. Clough, and Mark Sanderson. 2011. Evaluating multi-query sessions.
+# In Proceedings of the 34th international ACM SIGIR conference on Research and development in Information Retrieval
+# (SIGIR '11). ACM, New York, NY, USA, 1053-1062. DOI=http://dx.doi.org/10.1145/2009916.2010056
 class ESNDCG:
-    # b             rank discount parameter
-    # bq            query discount parameter
-    # discountq     whether or not to apply query discount
-    def __init__(self, pref, pdown, normScanPath, N=10000):
+    #
+    # pref              the probability to reformulate to the next query after examining a query's SERP
+    # pdown             the probability to examine the next result in a ranked list
+    # path_discount     whether to discount lower ranked results in a scan path
+    # N                 the number of sampling iteration
+    def __init__(self, pref, pdown, path_discount, N=1000):
         self.pref = pref
         self.pdown = pdown
-        self.normScanPath = normScanPath
+        self.normScanPath = path_discount
         self.N = N
 
+    #
+    # compute dcg of a ranked list until some cutoff k
     def dcg(self, qrels, results, k):
         dcg, rank = 0.0, 1
         for doc in results:
@@ -90,6 +129,7 @@ class ESNDCG:
                 break
         return dcg
 
+    #
     # sample a scan path by pref and pdown
     def sample(self, sresults, k):
         scanpath = []
@@ -106,6 +146,8 @@ class ESNDCG:
                 break
         return scanpath
 
+    #
+    # estimate esnDCG by sampling
     def evaluate(self, qrels, sresults, k):
         ideal_list = sorted(qrels, key=lambda key: qrels[key], reverse=True)
         sum_sample = 0
@@ -117,10 +159,12 @@ class ESNDCG:
         return sum_sample / self.N
 
 
-# statistics of individual queries' scores
+#
+# SQMetric aggregates individual queries' scores to evaluate a session.
 class SQMetric:
-    # qmetric       the query level metric
-    # aggfunc       aggregation function used to derive session score from query scores, e.g., np.mean
+    #
+    # qmetric       the metric used to evaluate each individual query
+    # aggfunc       the aggregation function used to derive session score from a list of query scores, e.g., np.mean
     def __init__(self, qmetric, aggfunc):
         self.qmetric = qmetric
         self.aggfunc = aggfunc

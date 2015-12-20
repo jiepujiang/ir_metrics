@@ -1,8 +1,10 @@
-import numpy as np
+#
+# tune esnDCG parameters by a brute force scan
+#
+
 import scipy.stats as stats
 
-from utils import *
-from query_metrics import *
+from dataset import *
 from session_metrics import *
 
 session_ratings = load_ratings('data/session')
