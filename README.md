@@ -16,9 +16,9 @@ http://people.cs.umass.edu/~jpjiang/papers/ecir16_metrics.pdf
 
 **DEPENDENCY**
 
-python (2.7.6)
-numpy (1.10.2)
-scipy (0.16.1)
+* python (2.7.6)
+* numpy (1.10.2)
+* scipy (0.16.1)
 
 I **guess** other versions of python 2.7.*, numpy, and scipy are fine, but I've only tested on the specified version.
 
