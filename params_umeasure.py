@@ -17,7 +17,7 @@ examine_time = [9.8, 23.0, 37.6]
 
 best_para = 0
 best_r = 0.0
-for T in xrange(1, 1000, 1):
+for T in xrange(40, 1000, 1):
     metric = SQMetric(UMeasure(2, examine_time, T), np.mean)
     ratings = []
     sevals = []

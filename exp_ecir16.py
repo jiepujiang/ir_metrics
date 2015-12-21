@@ -190,7 +190,7 @@ metrics.append(
         [  # a variant of u-measure
             'U-measure',
             [
-                SQMetric(UMeasure(2, [9.8, 23.0, 37.6], 65), np.mean)
+                SQMetric(UMeasure(2, [9.8, 23.0, 37.6], 99), np.mean)
             ]
         ]
 )

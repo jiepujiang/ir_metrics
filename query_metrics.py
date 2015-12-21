@@ -367,11 +367,11 @@ class UMeasure:
         for doc in results:
             rel = qrels.get(doc, 0)
             gain = (2 ** rel - 1.0) / 2 ** self.rmax
+            arrive_time += self.time[rel]
             discount = 1 - arrive_time / self.T
             if discount < 0:
                 discount = 0
             sum_gain += gain * discount
-            arrive_time += self.time[rel]
             rank += 1
             if rank > k:
                 break
